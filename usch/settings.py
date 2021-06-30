@@ -60,6 +60,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'usch.wsgi.application'
 
+AUTH_USER_MODEL = "account.User"
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
