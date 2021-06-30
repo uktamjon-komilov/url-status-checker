@@ -1,1 +1,41 @@
-{% extends "base.html" %} {% block main %} {% endblock %}
+{% extends "base.html" %} {% block main %}
+
+<div class="container mt-3">
+  {% include "includes/messages.html" %}
+  <a href="{% url 'add_url' %}" class="btn btn-success">Add URL</a>
+  <br />
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Title</th>
+        <th scope="col">URL Address</th>
+        <th scope="col">Request Interval</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for url in urls %}
+      <tr class="" id="{{url.id}}">
+        <th scope="row">{{url.id}}</th>
+        <td>{{url.custom_name}}</td>
+        <td class="url-address" data-tr_id="{{url.id}}">{{url.url}}</td>
+        <td>{{url.request_interval}}</td>
+        <td>
+          <a href="{% url 'update_url' url.id %}" class="btn btn-info">Edit</a>
+        </td>
+        <td>
+          <a
+            href="{% url 'list_of_urls' %}?action=delete&id={{url.id}}"
+            class="btn btn-danger"
+            >Delete</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

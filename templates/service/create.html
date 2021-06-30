@@ -1,1 +1,48 @@
-{% extends "base.html" %} {% block main %} {% endblock %}
+{% extends "base.html" %} {% block main %}
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-6 offset-3">
+      <div class="card p-5">
+        <form action="{% url 'add_url' %}" method="post">
+          {% csrf_token %}
+          <label for="title" class="form-label">Title</label>
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="title"
+              name="title"
+              placeholder="Enter your custom title"
+            />
+          </div>
+          <label for="url" class="form-label">URL</label>
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="url"
+              name="url"
+              placeholder="Enter your url"
+            />
+          </div>
+          <label for="request-interval" class="form-label"
+            >Request Interval</label
+          >
+          <div class="input-group mb-3">
+            <input
+              type="number"
+              class="form-control"
+              id="request-interval"
+              name="request-interval"
+              placeholder="Enter your request interval"
+            />
+          </div>
+          <input type="submit" value="Save" class="btn btn-success" />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
