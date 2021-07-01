@@ -39,10 +39,11 @@ def register_user(request):
             messages.add_message(request, messages.WARNING, "Passwords don't match.", extra_tags="text text-warning")
             return render(request, "auth/register.html")
         
-        user = User(username=username)
-        user.save()
-        user.set_password(password1.strip())
-        user.save()
+        if User.objects.filter(username=username).exists():
+            messages.add_message(request, messages.WARNING, "This username already exists.", extra_tags="text text-warning")
+            return render(request, "auth/register.html")
+
+        User.objects.create_user(username=username, password=password1.strip())
 
         messages.add_message(request, messages.SUCCESS, "You have successfully registered!", extra_tags="text text-success")
         return redirect("login_user")

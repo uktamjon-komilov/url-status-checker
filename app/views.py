@@ -1,8 +1,11 @@
-from django.conf.urls import url
 from django.contrib import messages
 from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
+
 from .models import Url
 
+
+@login_required(login_url="/account/login/")
 def list_of_urls(request):
     context = {}
     if request.GET.get("action", None) == "delete":
@@ -20,6 +23,7 @@ def list_of_urls(request):
     return render(request, "service/list.html", context)
 
 
+@login_required(login_url="/account/login/")
 def add_url(request):
     if request.method == "POST":
         url_obj = Url()
@@ -46,6 +50,7 @@ def add_url(request):
     return render(request, "service/create.html")
 
 
+@login_required(login_url="/account/login/")
 def update_url(request, _id):
     context = {}
 
