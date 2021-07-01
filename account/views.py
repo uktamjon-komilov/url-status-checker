@@ -13,7 +13,7 @@ def login_user(request):
             messages.add_message(request, messages.WARNING, "You haven't entered username or password.", extra_tags="text text-warning")
             return render(request, "auth/login.html")
         
-        user = authenticate(request, username=username, password=username)
+        user = authenticate(request, username=username, password=password)
         if not user:
             messages.add_message(request, messages.ERROR, "Username or password is incorrect.", extra_tags="text text-danger")
             return render(request, "auth/login.html")
