@@ -1,1 +1,1 @@
-web: gunicorn usch:wsgi
+web: gunicorn usch.wsgi
