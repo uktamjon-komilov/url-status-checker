@@ -20,7 +20,13 @@
       <tr class="" id="{{url.id}}">
         <th scope="row">{{url.id}}</th>
         <td>{{url.custom_name}}</td>
-        <td class="url-address" data-tr_id="{{url.id}}">{{url.url}}</td>
+        <td
+          class="url-address"
+          data-tr_id="{{url.id}}"
+          data-request_interval="{{url.request_interval}}"
+        >
+          {{url.url}}
+        </td>
         <td>{{url.request_interval}}</td>
         <td>
           <a href="{% url 'update_url' url.id %}" class="btn btn-info">Edit</a>
@@ -38,13 +44,45 @@
   </table>
 </div>
 
-<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
-
 <script>
   const urls = document.querySelectorAll(".url-address");
   urls.forEach((url) => {
-    console.log(url);
+    setInterval(function () {
+      check_status(url);
+    }, parseInt(url.getAttribute("data-request_interval")) * 1000);
   });
+
+  function check_status(url) {
+    const url_address = url.innerHTML.toString();
+    console.log(url.innerHTML);
+
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4 && xhr.status == 200) {
+        document
+          .getElementById(url.getAttribute("data-tr_id"))
+          .classList.add("table-success");
+        document
+          .getElementById(url.getAttribute("data-tr_id"))
+          .classList.remove("table-danger");
+      } else {
+        document
+          .getElementById(url.getAttribute("data-tr_id"))
+          .classList.add("table-danger");
+        document
+          .getElementById(url.getAttribute("data-tr_id"))
+          .classList.remove("table-success");
+      }
+    };
+    xhr.open("GET", url_address);
+    xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+    xhr.setRequestHeader("Access-Control-Allow-Methods", "GET");
+    xhr.setRequestHeader(
+      "Access-Control-Allow-Headers",
+      "accept, content-type"
+    );
+    xhr.send();
+  }
 </script>
 
 {% endblock %}
