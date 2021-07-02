@@ -3,6 +3,7 @@ from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 
 from .models import Url
+from .forms import UrlForm
 
 
 @login_required(login_url="/account/login/")
@@ -25,29 +26,23 @@ def list_of_urls(request):
 
 @login_required(login_url="/account/login/")
 def add_url(request):
+    context = {}
+
     if request.method == "POST":
-        url_obj = Url()
+        form = UrlForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.SUCCESS, "You have added a new link to be observed!", extra_tags="text text-success")
+            return redirect("list_of_urls")
+        else:
+            messages.add_message(request, messages.WARNING, "Form you have submitted is not valid!", extra_tags="text text-danger")
+            context["form"] = form
+            print(form.errors)
+            return render(request, "service/create.html", context)
+    else:
+        context["form"] = UrlForm(initial={"user": request.user})
 
-        title = request.POST.get("title", None)
-        if title:
-            url_obj.custom_name = title
-        
-        url = request.POST.get("url", None)
-        if url:
-            url_obj.url = url
-        
-        interval = request.POST.get("request-interval", None)
-        if interval:
-            url_obj.request_interval = int(interval)
-        
-        url_obj.user = request.user
-        url_obj.save()
-
-        messages.add_message(request, messages.SUCCESS, "You have added a new link to be observed!", extra_tags="text text-success")
-
-        return redirect("list_of_urls")
-
-    return render(request, "service/create.html")
+    return render(request, "service/create.html", context)
 
 
 @login_required(login_url="/account/login/")
