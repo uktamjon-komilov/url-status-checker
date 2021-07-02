@@ -47,33 +47,22 @@ def add_url(request):
 
 @login_required(login_url="/account/login/")
 def update_url(request, _id):
-    context = {}
+    context = {"id": _id}
 
     urls = Url.objects.filter(id = _id)
     if urls.exists():
-        obj = urls.first()
-        context["obj"] = obj
+        url = urls.first()
+        context["form"] = UrlForm(instance=url)
     else:
         return redirect("list_of_urls")
 
     if request.method == "POST":
-        title = request.POST.get("title", None)
-        if title:
-            obj.custom_name = title
-        
-        url = request.POST.get("url", None)
-        if url:
-            obj.url = url
-        
-        interval = request.POST.get("request-interval", None)
-        if interval:
-            obj.request_interval = int(interval)
-        
-        obj.user = request.user
-        obj.save()
-
-        messages.add_message(request, messages.SUCCESS, "You have updated a link!", extra_tags="text text-success")
-
-        return redirect("list_of_urls")
+        form = UrlForm(request.POST, instance=url)
+        if form.is_valid():
+            form.save()
+            messages.add_message(request, messages.SUCCESS, "You have updated a link!", extra_tags="text text-success")
+            return redirect("list_of_urls")
+        else:
+            messages.add_message(request, messages.WARNING, "Update form is not valid!", extra_tags="text text-warning")
 
     return render(request, "service/update.html", context)
