@@ -58,7 +58,21 @@
     const xhr = new XMLHttpRequest();
 
     xhr.addEventListener("readystatechange", function () {
-      console.log(xhr);
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        document
+          .getElementById(url.getAttribute("data-tr_id"))
+          .classList.add("table-success");
+        document
+          .getElementById(url.getAttribute("data-tr_id"))
+          .classList.remove("table-danger");
+      } else {
+        document
+          .getElementById(url.getAttribute("data-tr_id"))
+          .classList.add("table-danger");
+        document
+          .getElementById(url.getAttribute("data-tr_id"))
+          .classList.remove("table-success");
+      }
     });
 
     xhr.open(
@@ -69,22 +83,6 @@
     xhr.send({
       url: url,
     });
-
-    if (true) {
-      document
-        .getElementById(url.getAttribute("data-tr_id"))
-        .classList.add("table-success");
-      document
-        .getElementById(url.getAttribute("data-tr_id"))
-        .classList.remove("table-danger");
-    } else {
-      document
-        .getElementById(url.getAttribute("data-tr_id"))
-        .classList.add("table-danger");
-      document
-        .getElementById(url.getAttribute("data-tr_id"))
-        .classList.remove("table-success");
-    }
   }
 </script>
 
