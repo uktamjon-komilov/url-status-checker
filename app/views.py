@@ -75,17 +75,6 @@ def update_url(request, _id):
     return render(request, "service/update.html", context)
 
 
-def check_availability(url):
-    availability = False
-    try:
-        response = list(gr.map(gr.get(url)))[0]
-        if response.status_code == 200:
-            availability = True
-    except:
-        pass
-    return availability
-
-
 async def main(url):
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
