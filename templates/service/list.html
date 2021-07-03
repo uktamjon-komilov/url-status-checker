@@ -79,11 +79,8 @@
       }
     });
 
-    xhr.open(
-      "POST",
-      "https://uptime-django-monitor.herokuapp.com/check_status/"
-    );
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.open("POST", "https://172.104.160.90/check_status/");
+    xhr.setRequestHeader("Content-Type", "application/json");
     xhr.send({
       url: url,
     });
