@@ -58,7 +58,11 @@
     const xhr = new XMLHttpRequest();
 
     xhr.addEventListener("readystatechange", function () {
-      if (xhr.readyState == 4 && xhr.status == 200) {
+      if (
+        xhr.readyState == 4 &&
+        xhr.status == 200 &&
+        xhr.responseText.available
+      ) {
         document
           .getElementById(url.getAttribute("data-tr_id"))
           .classList.add("table-success");

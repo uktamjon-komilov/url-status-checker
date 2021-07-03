@@ -6,6 +6,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 import json
 
+import aiohttp
+import asyncio
+
 from .models import Url
 from .forms import UrlForm
 
@@ -72,7 +75,35 @@ def update_url(request, _id):
     return render(request, "service/update.html", context)
 
 
+def check_availability(url):
+    availability = False
+    try:
+        response = list(gr.map(gr.get(url)))[0]
+        if response.status_code == 200:
+            availability = True
+    except:
+        pass
+    return availability
+
+
+async def main(url):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            return response
+
+
 @csrf_exempt
 def check_status(request):
-    request_data = json.loads(request.body)
-    return JsonResponse("salom")
+    url = json.loads(request.body)["url"]
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    loop = asyncio.get_event_loop()
+    try:
+        response = loop.run_until_complete(main(url))
+        if response.status == 200:
+            return JsonResponse({"available": True})
+        else:
+            return JsonResponse({"available": False})
+    except:
+        return JsonResponse({"available": False})
