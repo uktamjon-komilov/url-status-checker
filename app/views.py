@@ -1,6 +1,10 @@
 from django.contrib import messages
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
+
+import json
 
 from .models import Url
 from .forms import UrlForm
@@ -66,3 +70,9 @@ def update_url(request, _id):
             messages.add_message(request, messages.WARNING, "Update form is not valid!", extra_tags="text text-warning")
 
     return render(request, "service/update.html", context)
+
+
+@csrf_exempt
+def check_status(request):
+    request_data = json.loads(request.body)
+    return JsonResponse(json.dumps(request_data))

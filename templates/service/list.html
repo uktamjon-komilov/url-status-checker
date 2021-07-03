@@ -54,7 +54,18 @@
 
   function check_status(url) {
     const url_address = url.innerHTML.toString();
-    console.log(url.innerHTML);
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.addEventListener("readystatechange", function () {
+      console.log(xhr);
+    });
+
+    xhr.open("POST", "localhost:8000/check_status/");
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send({
+      url: url,
+    });
 
     if (true) {
       document
