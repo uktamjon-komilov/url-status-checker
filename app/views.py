@@ -75,4 +75,4 @@ def update_url(request, _id):
 @csrf_exempt
 def check_status(request):
     request_data = json.loads(request.body)
-    return JsonResponse(json.dumps(request_data))
+    return JsonResponse("salom")
