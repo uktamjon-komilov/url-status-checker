@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 import json
 
-import aiohttp
+import requests
 import asyncio
 
 from .models import Url
@@ -39,10 +39,20 @@ def add_url(request):
         form = UrlForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.add_message(request, messages.SUCCESS, "You have added a new link to be observed!", extra_tags="text text-success")
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                "You have added a new link to be observed!",
+                extra_tags="text text-success",
+            )
             return redirect("list_of_urls")
         else:
-            messages.add_message(request, messages.WARNING, "Form you have submitted is not valid!", extra_tags="text text-danger")
+            messages.add_message(
+                request,
+                messages.WARNING,
+                "Form you have submitted is not valid!",
+                extra_tags="text text-danger",
+            )
             context["form"] = form
             print(form.errors)
             return render(request, "service/create.html", context)
@@ -56,7 +66,7 @@ def add_url(request):
 def update_url(request, _id):
     context = {"id": _id}
 
-    urls = Url.objects.filter(id = _id)
+    urls = Url.objects.filter(id=_id)
     if urls.exists():
         url = urls.first()
         context["form"] = UrlForm(instance=url)
@@ -67,32 +77,41 @@ def update_url(request, _id):
         form = UrlForm(request.POST, instance=url)
         if form.is_valid():
             form.save()
-            messages.add_message(request, messages.SUCCESS, "You have updated a link!", extra_tags="text text-success")
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                "You have updated a link!",
+                extra_tags="text text-success",
+            )
             return redirect("list_of_urls")
         else:
-            messages.add_message(request, messages.WARNING, "Update form is not valid!", extra_tags="text text-warning")
+            messages.add_message(
+                request,
+                messages.WARNING,
+                "Update form is not valid!",
+                extra_tags="text text-warning",
+            )
 
     return render(request, "service/update.html", context)
 
 
 async def main(url):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            return response
+    loop = asyncio.get_event_loop()
+    futures = [loop.run_in_executor(None, requests.get, url)]
+    try:
+        for response in await asyncio.gather(*futures):
+            if response.status_code == 200:
+                return JsonResponse({"available": True})
+            else:
+                return JsonResponse({"available": False})
+
+    except (Exception, ConnectionError):
+        return JsonResponse({"available": False})
 
 
 @csrf_exempt
 def check_status(request):
     url = json.loads(request.body)["url"]
 
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
     loop = asyncio.get_event_loop()
-    try:
-        response = loop.run_until_complete(main(url))
-        if response.status == 200:
-            return JsonResponse({"available": True})
-        else:
-            return JsonResponse({"available": False})
-    except:
-        return JsonResponse({"available": False})
+    loop.run_until_complete(main(url))
